@@ -1,0 +1,4 @@
+*.vcd
+*_tb
+*.vvp
+build
