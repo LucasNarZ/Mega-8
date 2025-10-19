@@ -1,4 +1,3 @@
-`timescale 1ns/1ps
 module tb_adder;
 
   reg a, b, cin;
@@ -13,7 +12,7 @@ module tb_adder;
   adder8 AD8(.a(A), .b(B), .sum(SUM8), .cout(COUT8));
 
   initial begin
-    $dumpfile("adder_tb.vcd");
+    $dumpfile("build/adder_tb.vcd");
     $dumpvars(0, tb_adder);
 
     // Test half_adder
