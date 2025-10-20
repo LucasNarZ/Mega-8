@@ -1,0 +1,18 @@
+Opcode (bin)    Operation
+0000            ADD
+0001            SUB
+0010            INC
+0011            DEC
+0100            AND
+0101            OR
+0110            XOR
+0111            NOT
+1000            NOR
+1001            XNOR
+1010            NAND
+1011            SLL
+1100            SRL
+1101            SRA
+1110            ROL
+1111            ROR
+
