@@ -12,7 +12,6 @@ module tb_adder;
   adder8 AD8(.a(A), .b(B), .sum(SUM8), .cout(COUT8));
 
   initial begin
-    $dumpfile("build/adder_tb.vcd");
     $dumpvars(0, tb_adder);
 
     // Test half_adder

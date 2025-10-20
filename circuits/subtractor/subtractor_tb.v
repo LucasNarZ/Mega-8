@@ -12,7 +12,6 @@ module tb_subtractor;
   subtr8 SUB8(.a(A), .b(B), .diff(DIFF8), .bout(BOUT8));
 
   initial begin
-    $dumpfile("build/subtractor_tb.vcd");
     $dumpvars(0, tb_subtractor);
 
     // Test half_subtractor
