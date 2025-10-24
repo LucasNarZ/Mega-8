@@ -18,7 +18,8 @@ XOR reg, reg
 NOT reg
 SHL reg, imm ; Shift to left
 SHR reg, imm ; Shift to Right
-JMP addr ; Jump to a instruction(addr) CMP reg/addr, reg/addr ; Compare 2 values and sets flags in the CPU
+JMP addr ; Jump to a instruction(addr) 
+CMP reg/addr, reg/addr ; Compare 2 values and sets flags in the CPU
 JNZ addr ; Jump if flag zero is not set
 JZ addr ; Jump if flag zero is set
 JC addr ; Jump if flag carry is set
@@ -93,8 +94,6 @@ E ; General purpose register
 | 2          | FLAGS_LOAD = 1, AC -> destination (if different from AC) |
 | 3          | PC_INC |
 
-
-
 ### SUB reg, reg/addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
@@ -138,30 +137,27 @@ E ; General purpose register
 ### INC reg
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | BUS <- reg, ALU_OP = ADD 1, AC_EN = 1 |
-| 2          | FLAGS_LOAD = 1, AC -> reg |
-| 3          | PC_INC |
+| 1          | BUS <- reg, ALU_OP = INC, PC_INC = 1, AC_EN = 1 |
+| 2          | FLAGS_LOAD = 1, BUS -> reg, PC_INC = 1 |
+
 
 ### DEC reg
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | BUS <- reg, ALU_OP = SUB 1, AC_EN = 1 |
-| 2          | FLAGS_LOAD = 1, AC -> reg |
-| 3          | PC_INC |
+| 1          | BUS <- reg, ALU_OP = DEC, PC_INC = 1, AC_EN = 1 |
+| 2          | FLAGS_LOAD = 1, BUS -> reg, PC_INC = 1 |
 
 ### AND / OR / XOR reg, reg
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | BUS <- source, ALU_OP = AND/OR/XOR, AC_EN = 1 |
-| 2          | FLAGS_LOAD = 1, AC -> destination |
-| 3          | PC_INC |
+| 1          | BUS <- source, BUS -> AC |
+| 2          | destiny -> BUS, ALU_OP = AND/OR/XOR, ALU_EN = 1, FLAGS_LOAD = 1, AC -> destination, PC_INC = 1 |
 
 ### NOT reg
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | BUS <- reg, ALU_OP = NOT, AC_EN = 1 |
-| 2          | FLAGS_LOAD = 1, AC -> reg |
-| 3          | PC_INC |
+| 1          | BUS <- reg, ALU_OP = NOT, ALU_EN = 1, AC_EN = 1 |
+| 2          | FLAGS_LOAD = 1, BUS -> reg, PC_INC = 1 |
 
 ### SHL / SHR reg, imm
 | Microcycle | Action / Control Signals |
@@ -173,44 +169,45 @@ E ; General purpose register
 ### JMP addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | ADDR_BUS <- IR[origin], PC_LOAD = addr |
+| 1          | IR_ADDR_BUS = 1, PC_LOAD_ADDR = 1 |
 
 ### JNZ addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | ADDR_BUS <- IR[origin], if Z=0, PC_LOAD = addr; else PC_INC |
+| 1          | IR_ADDR_BUS = 1, PC_LOAD_ADDR = 1, if Z=0, PC_LOAD = addr; else PC_INC |
 
 ### JZ addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | ADDR_BUS <- IR[origin], if Z=1, PC_LOAD = addr; else PC_INC |
+| 1          | IR_ADDR_BUS = 1, PC_LOAD_ADDR = 1, if Z=1, PC_LOAD = addr; else PC_INC |
 
 ### JC addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | ADDR_BUS <- IR[origin], if C=1, PC_LOAD = addr; else PC_INC |
+| 1          | IR_ADDR_BUS = 1, PC_LOAD_ADDR = 1, if C=1, PC_LOAD = addr; else PC_INC |
 
 ### CALL addr
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | SP_DEC |
-| 2          | ADDR_BUS <- SP, BUS <- PC+1, MEM_WRITE = 1 |
-| 3          | ADDR_BUS <- IR[origin], PC_LOAD = addr |
+| 1          | SP_DEC = 1|
+| 2          | SP_ADDR_BUS = 1, PC_INC,BUS <- PC, MEM_WRITE = 1 |
+| 3          | IR_ADDR_BUS = 1, PC_LOAD_ADDR = 1 |
 
 ### RET
 | Microcycle | Action / Control Signals |
 |------------|-------------------------|
-| 1          | ADDR_BUS <- SP, MEM_READ = 1, BUS -> PC |
-| 2          | SP_INC |
+| 1          | SP_ADDR_BUS = 1, MEM_READ = 1, BUS -> PC |
+| 2          | SP_INC = 1|
 
 ## UC Microinstructions flags:
 - ALU_OP: 4 bits;
 - ALU_EN: 1 bit;
 - AC_EN: 1 bit;
 - REG_SEL_SOURCE: 3 bits;
-- REG_WE_SOURCE: 1 bit;
+- REG_RE_SOURCE: 1 bit;
+- SP_ADDR_BUS: 1 bit;
 - REG_SEL_DEST: 3 bits;
-- REG_RE_DEST: 1 bit;
+- REG_WE_DEST: 1 bit;
 - MEM_WRITE: 1 bit;
 - MEM_READ: 1bit;
 - PC_INC: 1 bit;
@@ -218,6 +215,7 @@ E ; General purpose register
 - SP_DEC: 1 bit;
 - FLAGS_LOAD: 1 bit;
 - IR_ADDR_BUS: 1 bit;
+- PC_LOAD_ADDR: 1 bit;
 - SHIFT_AMOUNT: 3 bits;
 - JNZ: 1 bit;
 - JZ: 1 bit;
